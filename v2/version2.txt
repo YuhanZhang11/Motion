@@ -1,0 +1,2 @@
+- In this version, machinea started to transmit data right after handshaking with machineb.
+- The problem may be that machineb has not handshaked with machinc yet.

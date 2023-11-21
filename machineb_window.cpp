@@ -3,11 +3,12 @@
 #include <Ws2tcpip.h>
 #include <string>
 
-
 using namespace std;
 
+string most_recent_data;
+
 int main() {
-    int PORT_B = 55000; // Port for machinea to connect to
+    int PORT_B = 55000; // Port for machinea
     int PORT_C = 50000; // Port for machinec
 
     WSADATA wsaData;
@@ -68,7 +69,6 @@ int main() {
             cout << "[LOG] : Sending response to machinea.\n";
             send(machinea_socket, "hi motion server", strlen("hi motion server"), 0);
 
-            // Create a separate socket for machinec
             SOCKET machinec_server_socket_descriptor = socket(AF_INET, SOCK_STREAM, 0);
             if (machinec_server_socket_descriptor == INVALID_SOCKET) {
                 cerr << "[ERROR] : Machinec socket creation failed.\n";
@@ -98,7 +98,6 @@ int main() {
 
             cout << "[LOG] : Waiting for incoming connections on PORT_C for machinec...\n";
 
-            // Accept connection from machinec
             machinec_socket = accept(machinec_server_socket_descriptor, (struct sockaddr *)&machinec_address, &server_address_length);
             if (machinec_socket == INVALID_SOCKET) {
                 cerr << "[ERROR] : Accept from machinec failed.\n";
@@ -111,7 +110,7 @@ int main() {
 
             cout << "[LOG] : Connection accepted from machinec.\n";
 
-            // Receive message from machinec
+            // Handshake with Machine C
             char buffer_c[1024] = {};
             int valread_c = recv(machinec_socket, buffer_c, 1024, 0);
 
@@ -120,23 +119,54 @@ int main() {
                 cout << "[LOG] : Received message from machinec: " << received_message_c << endl;
 
                 if (received_message_c == "this is the host") {
-                    // Send response to machinec
+                    // Send response to Machine C
                     send(machinec_socket, "hello host!", strlen("hello host!"), 0);
+                    // Send response to Machine A
+                    send(machinea_socket, "handshaked with machinec", strlen("handshaked with machinec"), 0);
 
-                    // Continue communication with machinea and machinec...
+                    // Start data transmission
+                    while (true) {
+                        char data_buffer[1024] = {};
+                        int data_valread = recv(machinea_socket, data_buffer, 1024, 0);
+
+                        if (data_valread > 0) {
+                            string received_data(data_buffer);
+                            cout << "[LOG] : Received data from machinea: " << received_data << endl;
+                            most_recent_data = received_data;
+                        } else {
+                            cout << "[ERROR] : No data received from machinea.\n";
+                            break;
+                        }
+
+                        char request_buffer[1024] = {};
+                        int request_valread = recv(machinec_socket, request_buffer, 1024, 0);
+
+                        if (request_valread > 0) {
+                            string request_message(request_buffer);
+                            cout << "[LOG] : Received request for data from machinec: " << request_message << endl;
+
+                            if (request_message == "Request for data") {
+                                send(machinec_socket, most_recent_data.c_str(), most_recent_data.length(), 0);
+                                cout << "[LOG] : Sent most recent data to machinec.\n";
+                            } else {
+                                cout << "[ERROR] : Invalid message received from machinec. Closing connection.\n";
+                                break;
+                            }
+                        } else {
+                            cout << "[ERROR] : No message received from machinec.\n";
+                            break;
+                        }
+                    }
                 } else {
                     cout << "[ERROR] : Invalid message received from machinec. Closing connection.\n";
                 }
             } else {
                 cout << "[ERROR] : No message received from machinec.\n";
             }
-        } else {
-            cout << "[ERROR] : Invalid message received from machinea. Closing connection.\n";
         }
     } else {
-        cout << "[ERROR] : No message received from machinea.\n";
+        cout << "[ERROR] : Invalid message received from machinea. Closing connection.\n";
     }
-
     closesocket(server_socket_descriptor);
     closesocket(machinea_socket);
     closesocket(machinec_socket);

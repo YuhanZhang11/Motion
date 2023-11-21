@@ -14,27 +14,34 @@ def transmit_data(data, client_socket, log_file):
     client_socket.send(data_str.encode())
 
 def main():
-    PORT = 55000
-    address = ('127.0.0.1', PORT)
+    PORT_B = 55000
+    address_b = ('127.0.0.1', PORT_B)
 
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect(address)
+    client_socket_b = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket_b.connect(address_b)
 
     expected_message = "this is motion server"
-    client_socket.send(expected_message.encode())
+    client_socket_b.send(expected_message.encode())
 
-    received_message = client_socket.recv(1024).decode()
+    received_message = client_socket_b.recv(1024).decode()
     print(f"[LOG] : Received message from machineb: {received_message}")
 
     if received_message == "hi motion server":
-        print("[LOG] : Starting data transmission...")
-        with open("machinea_log.txt", "a") as log_file:
-            for _ in range(20):  
-                data = generate_data()
-                transmit_data(data, client_socket, log_file)
-                time.sleep(0.5)
+        print("[LOG] : Waiting for machineb to handshake with machinec...")
 
-    client_socket.close()
+        while True:
+            received_message_b = client_socket_b.recv(1024).decode()
+
+            if received_message_b == "handshaked with machinec":
+                print("[LOG] : Machineb has successfully handshake with machinec. Starting data transmission...")
+                with open("machinea_log.txt", "a") as log_file:
+                    for _ in range(20):  
+                        data = generate_data()
+                        transmit_data(data, client_socket_b, log_file)
+                        time.sleep(0.5)
+                break  # Break out of the loop once data transmission is done
+
+    client_socket_b.close()
 
 if __name__ == "__main__":
     main()

@@ -137,7 +137,7 @@ int main()
                     // Send response to Machine C
                     send(machinec_socket, "hello host!", strlen("hello host!"), 0);
 
-                    // Start data transmission and request
+                    // Start data transmission
                     while (true)
                     {
                         char data_buffer[1024] = {};
@@ -193,10 +193,15 @@ int main()
     {
         cout << "[ERROR] : Invalid message received from machinea. Closing connection.\n";
     }
+}
+else
+{
+    cout << "[ERROR] : No message received from machinea.\n";
+}
 
-    closesocket(server_socket_descriptor);
-    closesocket(machinea_socket);
-    closesocket(machinec_socket);
-    WSACleanup();
-    return 0;
+closesocket(server_socket_descriptor);
+closesocket(machinea_socket);
+closesocket(machinec_socket);
+WSACleanup();
+return 0;
 }
