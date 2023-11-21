@@ -35,7 +35,7 @@ def main():
             if received_message_b == "handshaked with machinec":
                 print("[LOG] : Machineb has successfully handshake with machinec. Starting data transmission...")
                 with open("machinea_log.txt", "a") as log_file:
-                    for _ in range(20):  
+                    for _ in range(6):  
                         data = generate_data()
                         transmit_data(data, client_socket_b, log_file)
                         time.sleep(0.5)
