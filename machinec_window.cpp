@@ -41,7 +41,7 @@ int main() {
     cout << "[LOG] : Connected to machineb.\n";
 
     // Send message to machineb for handshake
-    const char *handshake_msg = "Request for handshake";
+    const char *handshake_msg = "this is the host";
     send(machinec_socket, handshake_msg, strlen(handshake_msg), 0);
     cout << "[LOG] : Sent handshake request to machineb.\n";
 
