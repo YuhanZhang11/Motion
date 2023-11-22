@@ -159,18 +159,19 @@ int main()
                     // Start data transmission
                     while (true)
                     {
-                        char data_buffer[256] = {};
-                        int data_valread = recv(machinea_socket, data_buffer, 256, 0);
+                        char data_buffer[1024] = {};
+                        int data_valread = recv(machinea_socket, data_buffer, 1024, 0);
 
                         if (data_valread > 0)
                         {
                             string received_data(data_buffer);
-                            cout << "[LOG] : Received data from machinea: " << received_data << endl;
-                            most_recent_data = received_data;
+                            // cout << "[LOG] : Received data from machinea: " << received_data << endl;
+                            // most_recent_data = received_data;
 
                             // Extracting the last line from received_data
-                            // string last_received_data = getLastLine(received_data);
-                            // cout << "Last received line from machinea: " << last_received_data << endl;
+                            string last_received_data = getLastLine(received_data);
+                            cout << "Last received line from machinea: " << last_received_data << endl;
+                            most_recent_data = last_received_data;
                         }
                         else
                         {

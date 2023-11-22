@@ -1,0 +1,1 @@
+- this version is good for single threading. transmitted line by line.

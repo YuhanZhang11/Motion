@@ -61,7 +61,7 @@ int main()
         {
             // Handshake successful, continue communication with machineb...
             while (true)
-            {
+            { 
                 // Send message to machineb to request data
                 const char *data_request = "Request for data";
                 send(machinec_socket, data_request, strlen(data_request), 0);
@@ -87,8 +87,8 @@ int main()
                     cout << "[ERROR] : No response received from machineb.\n";
                 }
 
-                // Wait for 5 seconds before sending the next request
-                std::this_thread::sleep_for(std::chrono::seconds(3));
+                // Wait for 2 seconds before sending the next request
+                std::this_thread::sleep_for(std::chrono::seconds(1));
             }
         }
         else
