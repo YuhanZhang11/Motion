@@ -35,11 +35,15 @@ def main():
             if received_message_b == "handshaked with machinec":
                 print("[LOG] : Machineb has successfully handshake with machinec. Starting data transmission...")
                 with open("machinea_log.txt", "a") as log_file:
-                    for _ in range(20):  
+                    for _ in range(10):  
                         data = generate_data()
                         transmit_data(data, client_socket_b, log_file)
                         time.sleep(0.5)
                 break  # Break out of the loop once data transmission is done
+        
+        # Send end-of-transmission signal to machineb
+        expected_message = "transmission complete"
+        client_socket_b.send(expected_message.encode())
 
     client_socket_b.close()
 

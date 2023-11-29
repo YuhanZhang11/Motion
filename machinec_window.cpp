@@ -87,7 +87,7 @@ int main()
                     cout << "[ERROR] : No response received from machineb.\n";
                 }
 
-                // Wait for 2 seconds before sending the next request
+                // Wait for 1 seconds before sending the next request
                 std::this_thread::sleep_for(std::chrono::seconds(1));
             }
         }
