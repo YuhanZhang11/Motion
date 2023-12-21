@@ -14,8 +14,8 @@ def transmit_data(data, client_socket, log_file):
     client_socket.send(data_str.encode())
 
 def main():
-    PORT = 55000
-    address = ('127.0.0.1', PORT)
+    PORTB = 55000
+    address = ('127.0.0.1', PORTB)
 
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect(address)
